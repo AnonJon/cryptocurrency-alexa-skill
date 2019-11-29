@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "api starter",
+      "invocationName": "crypto fuse",
       "types": [],
       "intents": [
         {
@@ -20,16 +20,14 @@
           "name": "GetRemoteDataIntent",
           "slots": [],
           "samples": [
-            "how many people are in space",
-            "how many people are in space now",
-            "how many people are currently in space",
-            "how many humans are in space",
-            "how many humans are in space now",
-            "how many humans are currently in space",
-            "how many astronauts are in space",
-            "how many astronauts are in space now",
-            "how many astronauts are currently in space"
+            "how much is bitcoin",
+            "what is bitcoin at",
+            "how much is one bitcoin"
           ]
+        },
+        {
+          "name": "OpenIntent",
+          "samples": ["open cryptofuse portfolio"]
         }
       ]
     }

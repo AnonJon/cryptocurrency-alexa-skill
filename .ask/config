@@ -1,20 +1,44 @@
 {
   "deploy_settings": {
     "default": {
-      "skill_id": "",
+      "skill_id": "amzn1.ask.skill.c091b012-ff99-4f52-a428-b81340d6b925",
       "was_cloned": false,
       "merge": {
         "manifest": {
           "apis": {
             "custom": {
               "endpoint": {
-                "uri": "ask-custom-dabblelab-api-starter-default"
+                "uri": "ask-custom-cryptofuse-default"
               }
             }
           }
         }
       },
-      "in_skill_products": []
+      "in_skill_products": [],
+      "resources": {
+        "manifest": {
+          "eTag": "30c31e0d2eb86fcb05d25080a8cc04e6"
+        },
+        "interactionModel": {
+          "en-US": {
+            "eTag": "4a99a9dbfc30c15435ddcbc380c0919f"
+          }
+        },
+        "lambda": [
+          {
+            "alexaUsage": [
+              "custom/default"
+            ],
+            "arn": "arn:aws:lambda:us-east-1:077679469516:function:ask-custom-cryptofuse-default",
+            "awsRegion": "us-east-1",
+            "codeUri": "lambda/custom",
+            "functionName": "ask-custom-cryptofuse-default",
+            "handler": "index.handler",
+            "revisionId": "b0ae9df8-758e-4e33-9452-848d10c20765",
+            "runtime": "nodejs8.10"
+          }
+        ]
+      }
     }
   }
 }

@@ -1,85 +1,97 @@
 /* eslint-disable  func-names */
 /* eslint-disable  no-console */
 
-const Alexa = require('ask-sdk-core');
+const Alexa = require("ask-sdk-core");
+
+const LaunchRequestHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === "LaunchRequest";
+  },
+  handle(handlerInput) {
+    const speechText =
+      "Welcome to Cryptofuse! You can find out how each cryptocurrency is doing or check your portfolio. What would you like to know?";
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard("Hello World", speechText)
+      .getResponse();
+  }
+};
 
 const GetRemoteDataHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
-      || (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'GetRemoteDataIntent');
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      handlerInput.requestEnvelope.request.intent.name === "GetRemoteDataIntent"
+    );
   },
   async handle(handlerInput) {
-    let outputSpeech = 'This is the default message.';
+    let outputSpeech = "This is the default message.";
 
-    await getRemoteData('http://api.open-notify.org/astros.json')
-      .then((response) => {
+    await getRemoteData(
+      "https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=USD,EUR"
+    )
+      .then(response => {
         const data = JSON.parse(response);
-        outputSpeech = `There are currently ${data.people.length} astronauts in space. `;
-        for (let i = 0; i < data.people.length; i++) {
-          if (i === 0) {
-            //first record
-            outputSpeech = outputSpeech + 'Their names are: ' + data.people[i].name + ', '
-          } else if (i === data.people.length - 1) {
-            //last record
-            outputSpeech = outputSpeech + 'and ' + data.people[i].name + '.'
-          } else {
-            //middle record(s)
-            outputSpeech = outputSpeech + data.people[i].name + ', '
-          }
-        }
+        let slotValues = getSlotValues(request.intent.slots);
+        outputSpeech = `${slotValues.coin.heardAs} is currently ${data.BTC.USD} U S dollars`;
       })
-      .catch((err) => {
+      .catch(err => {
         //set an optional error message here
         //outputSpeech = err.message;
       });
 
-    return handlerInput.responseBuilder
-      .speak(outputSpeech)
-      .getResponse();
-
-  },
+    return handlerInput.responseBuilder.speak(outputSpeech).getResponse();
+  }
 };
 
 const HelpIntentHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      handlerInput.requestEnvelope.request.intent.name === "AMAZON.HelpIntent"
+    );
   },
   handle(handlerInput) {
-    const speechText = 'You can introduce yourself by telling me your name';
+    const speechText = "You can introduce yourself by telling me your name";
 
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
       .getResponse();
-  },
+  }
 };
 
 const CancelAndStopIntentHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      (handlerInput.requestEnvelope.request.intent.name ===
+        "AMAZON.CancelIntent" ||
+        handlerInput.requestEnvelope.request.intent.name ===
+          "AMAZON.StopIntent")
+    );
   },
   handle(handlerInput) {
-    const speechText = 'Goodbye!';
+    const speechText =
+      "Thanks for using cryptofuse. I will keep your coins safe till you get back";
 
-    return handlerInput.responseBuilder
-      .speak(speechText)
-      .getResponse();
-  },
+    return handlerInput.responseBuilder.speak(speechText).getResponse();
+  }
 };
 
 const SessionEndedRequestHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    return handlerInput.requestEnvelope.request.type === "SessionEndedRequest";
   },
   handle(handlerInput) {
-    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+    console.log(
+      `Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`
+    );
 
     return handlerInput.responseBuilder.getResponse();
-  },
+  }
 };
 
 const ErrorHandler = {
@@ -90,31 +102,32 @@ const ErrorHandler = {
     console.log(`Error handled: ${error.message}`);
 
     return handlerInput.responseBuilder
-      .speak('Sorry, I can\'t understand the command. Please say again.')
-      .reprompt('Sorry, I can\'t understand the command. Please say again.')
+      .speak("Sorry, I can't understand the command. Please say again.")
+      .reprompt("Sorry, I can't understand the command. Please say again.")
       .getResponse();
-  },
+  }
 };
 
-const getRemoteData = function (url) {
+const getRemoteData = function(url) {
   return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? require('https') : require('http');
-    const request = client.get(url, (response) => {
+    const client = url.startsWith("https") ? require("https") : require("http");
+    const request = client.get(url, response => {
       if (response.statusCode < 200 || response.statusCode > 299) {
-        reject(new Error('Failed with status code: ' + response.statusCode));
+        reject(new Error("Failed with status code: " + response.statusCode));
       }
       const body = [];
-      response.on('data', (chunk) => body.push(chunk));
-      response.on('end', () => resolve(body.join('')));
+      response.on("data", chunk => body.push(chunk));
+      response.on("end", () => resolve(body.join("")));
     });
-    request.on('error', (err) => reject(err))
-  })
+    request.on("error", err => reject(err));
+  });
 };
 
 const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
+    LaunchRequestHandler,
     GetRemoteDataHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
@@ -122,4 +135,3 @@ exports.handler = skillBuilder
   )
   .addErrorHandlers(ErrorHandler)
   .lambda();
-
